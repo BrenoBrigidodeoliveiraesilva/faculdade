@@ -28,7 +28,11 @@ BEGIN
                  email);
 	RETURN nomeAluno;	
 END $$
-DELIMITER ;novo_Aluno
+DELIMITER ;
+
+
+
+
 
 
 ## QUESTAO 2
@@ -53,6 +57,10 @@ DELIMITER ;
 
 ## Faça um procedimento em MYSQL que use a estrutura de repetição REPEAT para 
 ## concatenar números de 1 a 9 (função concatenar em MySQL “CONCAT”);
+
+
+
+
 
 
 DELIMITER %%
