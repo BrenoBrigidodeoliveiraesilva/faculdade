@@ -1,49 +1,46 @@
 ## ATIVIDADE 4 PRIMEIRA QUESTAO:
 
-delimiter !!
-CREATE TRIGGER tri_vendas_ai 
-AFTER INSERT ON comivenda
-FOR EACH ROW
-BEGIN
-	DECLARE vTotal_itens float(10,2) DEFAULT 0;
-	DECLARE vTotal_item float(10,2)DEFAULT 0;
-	DECLARE total_item float(10,2)DEFAULT 0;
-	DECLARE fimLoop INT DEFAULT 0;    
-    DECLARE condLoop INT DEFAULT 0; 
-    DECLARE qtdProduto INT DEFAULT 0; 
-    
-
-    DECLARE busca_itens CURSOR FOR
-    SELECT n_valoivenda,n_qtdeivenda
-    FROM comivenda
-    WHERE n_numevenda = NEW.n_numevenda;
-    
-    
-    SELECT count(n_numevenda) INTO condLoop 
-    FROM comivenda
-    WHERE n_numevenda = NEW.n_numevenda;  
-    
-    OPEN busca_itens;   
-    
-    itens:LOOP
-	IF fimLoop=condLoop THEN
-	LEAVE itens;
-	END IF;
-	SET fimLoop=fimLoop+1;        
-        
-    FETCH busca_itens INTO total_item,qtdProduto;
-        
-
-    SET vTotal_item= total_item*qtdProduto;
-        
-    SET vTotal_itens= vTotal_itens + vTotal_item;
-        
-    END LOOP itens;    
-    CLOSE busca_itens;
-    
-    
-    UPDATE comvenda SET n_totavenda = vTotal_itens
-    WHERE n_numevenda = NEW.n_numevenda; 
+delimiter $$
+create trigger tri_vendas_ai
+after insert on comivenda
+for each row
+begin
 	
-END !!
+	declare vtotal_itens float(10,2) DEFAULT 0;
+	declare vtotal_item float(10,2) DEFAULT 0;
+	declare total_item float(10,2);
+    DECLARE qtd_item INT DEFAULT 0;
+    DECLARE fimloop INT DEFAULT 0;
+    
+	
+	declare busca_itens cursor for
+		select n_valoivenda, n_qtdeivenda
+		from comivenda
+		where n_numevenda = new.n_numevenda;
+    
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET fimloop = 1;
+    
+	
+	open busca_itens;
+		
+		itens : loop
+            
+			IF fimloop = 1 THEN
+				LEAVE itens;
+			END IF;
+        
+			fetch busca_itens into total_item, qtd_item;
+			
+			
+			SET vtotal_item = total_item * qtd_item;
+			set vtotal_itens = vtotal_itens + vtotal_item;
+            
+		end loop itens;
+	close busca_itens;
+    
+    SET vtotal_item = NEW.n_valoivenda * NEW.n_qtdeivenda;
+    
+	UPDATE comvenda SET n_totavenda = vtotal_itens - vtotal_item
+	WHERE n_numevenda = new.n_numevenda;
+end$$
 delimiter ;
