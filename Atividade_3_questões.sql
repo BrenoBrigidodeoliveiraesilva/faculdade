@@ -9,15 +9,14 @@
 ## do aluno Inserido.
 
 
-DELIMITER $$ 
-CREATE FUNCTION novo_Aluno(codigoCurso INT, 
+DELIMITER // 
+CREATE FUNCTION novoAluno(codigoCurso INT, 
 						  dataNascimento DATE, 
                           totalCredito INT, 
-                          mgp FLOAT(10,2), 
+                          mgp DOUBLE(10,2), 
                           nomeAluno VARCHAR(50), 
                           email VARCHAR(50)) 
 RETURNS VARCHAR(50)
-DETERMINISTIC
 BEGIN
 	INSERT INTO aluno(cod_curso, dat_nasc, tot_cred, mgp, nom_alun, email) 
 		 VALUES (codigoCurso, 
@@ -27,7 +26,7 @@ BEGIN
                  nomeAluno, 
                  email);
 	RETURN nomeAluno;	
-END $$
+END //
 DELIMITER ;
 
 
